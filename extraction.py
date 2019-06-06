@@ -1,4 +1,25 @@
 from pypinyin import pinyin, lazy_pinyin, Style
+import json
+import random
+
+commandfilename = 'commandSet.json'
+f = open(commandfilename, 'r', encoding='utf8')
+command_dict = json.loads(f.read(), encoding='utf8')
+f.close()
+command_set = []
+general_class = command_dict.keys()
+for general_command in general_class:
+    print(general_command)
+    specific_class = command_dict[general_command].keys()
+    for specific_command in specific_class:
+        commands = command_dict[general_command][specific_command]['commands']
+        # exit(0)
+        if len(commands) > 5:
+            command_set.extend(random.sample(list(commands), 5))
+        else:
+            command_set.extend(commands)
+
+print('command set count: ', len(command_set))    
 
 filename = 'corpus_new.txt'
 f = open(filename, 'r', encoding='utf8')
@@ -47,10 +68,10 @@ sorted_corpus = sorted(corpus_dict.items(), key=lambda d: len(d[1]))
 extraction_set = []
 
 cover_count = 0
-cover_limit = 385
+cover_limit = 385#397
 
 for corpus_pair in sorted_corpus:
-    print(corpus_pair[0], len(corpus_pair[1]))
+    # print(corpus_pair[0], len(corpus_pair[1]))
     sentences = corpus_pair[1]
     for sentence in sentences:
         if sentence in extraction_set:
@@ -61,14 +82,25 @@ for corpus_pair in sorted_corpus:
             corpus_cover[py] = corpus_cover[py] + 1
             if corpus_cover[py] == 10:
                 cover_count = cover_count + 1
-        if cover_count >= cover_limit:
+        if len(extraction_set) == 2000:
             break
-    if cover_count >= cover_limit:
+    if len(extraction_set) == 2000:
         break
 
 print(len(extraction_set))
 
-    # print(corpus_pair[0], len(corpus_pair[1]))
+extraction_set.extend(command_set)
+
+print(len(extraction_set))
+
+outputfilename = 'output.txt'
+f = open(outputfilename, 'w', encoding='utf8')
+for sentence in extraction_set:
+    f.write(sentence)
+    f.write('\n')
+f.close()
+
+# print(corpus_pair[0], len(corpus_pair[1]))
 
 
 # yinjiefilename = 'yinjie.txt'
